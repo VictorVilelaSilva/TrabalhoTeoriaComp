@@ -1,6 +1,6 @@
-b#aa
-bb#bb
-ab#ab
-ba#ab
-aa#aa
-aa#ab
+aaab
+aabb
+bbbb
+bbaa
+aaaa
+abab
