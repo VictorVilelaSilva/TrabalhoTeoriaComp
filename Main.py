@@ -16,9 +16,10 @@ class Instancia_MT:
         self.ponteiro = ponteiro
 
 def configura_maquina(nome_arqv, tipo):
+    # Ler arquivo de configuração
     with open(nome_arqv, "r") as arquivo:
         linhas = arquivo.readlines()
-
+    # Tratar linhas e strings
     linhas_tratadas = []
     strings_tratadas = []
 
@@ -28,33 +29,39 @@ def configura_maquina(nome_arqv, tipo):
     for palavra in strings:
         strings_tratadas.append(palavra.split()[0])
 
+    # Criar dicionário de estados e transições
     dicio = {}
     estado_final = linhas_tratadas[len(linhas_tratadas)-2][0]
 
     for i in range(3,len(linhas_tratadas)-3):
         estado, transicao = linhas_tratadas[i][0], tuple(linhas_tratadas[i][1:])
-        if(estado in dicio):  
+        if(estado in dicio): 
             dicio[estado].append(transicao)
         else:
             dicio[estado] = [transicao]
 
-        MT = Grafo(dicio)
+    # Criar grafo da máquina de Turing
+    MT = Grafo(dicio)
 
+    # Simular máquina de Turing
     if(tipo == 1):
         simula_MT_deterministica(linhas_tratadas, strings_tratadas, estado_final, MT)
     else:
         simula_MT_nao_deterministica(linhas_tratadas, strings_tratadas, estado_final, MT)
-        
-    
+            
 def simula_MT_deterministica(linhas_tratadas, strings_tratadas, estado_final, MT):
+    # Simula MT determinístico.
     for i in strings_tratadas:
+        # Processa cada palavra.
         palavra = list(i)
         palavra.append('_')
         ponteiro = 0
         estado_atual = linhas_tratadas[len(linhas_tratadas)-3][0]
         while(True):
+            # Executa loop até aceitar ou rejeitar.
             rejeita = True
             for transicao in MT.get_transicoes(estado_atual):
+                # Verifica transições possíveis.
                 if(transicao[0] == palavra[ponteiro]):
                     rejeita = False
                     estado_atual = transicao[1]
@@ -72,7 +79,9 @@ def simula_MT_deterministica(linhas_tratadas, strings_tratadas, estado_final, MT
                 break
 
 def simula_MT_nao_deterministica(linhas_tratadas, strings_tratadas, estado_final, MT):
+    # Simula a execução de uma Máquina de Turing não determinística.
     for i in strings_tratadas:
+        # Para cada palavra na lista de palavras tratadas.
         palavra = list(i)
         palavra.append('_')
         fila_execucao = []
@@ -80,9 +89,12 @@ def simula_MT_nao_deterministica(linhas_tratadas, strings_tratadas, estado_final
         fila_execucao.append(maquina)
         aceito = False
         while(len(fila_execucao)!=0):
+            # Enquanto houver instâncias na fila de execução.
             instancia = fila_execucao[0]
             for transicao in MT.get_transicoes(instancia.estado_atual):
+                # Para cada transição possível a partir do estado atual da instância.
                 if(transicao[0] == instancia.palavra[instancia.ponteiro]):
+                    # Se a transição é aplicável (o símbolo lido é igual ao símbolo da transição).
                     novo_estado = copy.deepcopy(instancia)
                     novo_estado.estado_atual = transicao[1]
                     novo_estado.palavra[novo_estado.ponteiro] = transicao[2]
